@@ -1,499 +1,219 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Guia do Concurseiro</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#f4f6f9; padding:18px; }
-    .wrap { max-width: 720px; margin: 0 auto; }
-    .card { background:#fff; border-radius:14px; padding:18px; box-shadow:0 4px 12px rgba(0,0,0,.08); margin-bottom:14px; }
-    h1 { margin:0 0 10px; text-align:center; }
-    .sub { text-align:center; opacity:.75; margin-top:-6px; margin-bottom:10px; }
-    .tabs { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:10px 0 0; }
-    .tab { padding:10px 12px; border-radius:10px; border:1px solid #d7dde6; background:#fff; }
-    .tab.active { background:#007bff; color:#fff; border-color:#007bff; }
-    #timer { font-size:44px; text-align:center; margin:12px 0 10px; }
-    .btnrow { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-    button { padding:10px 14px; border:none; border-radius:10px; background:#007bff; color:#fff; font-size:16px; }
-    button.secondary { background:#6c757d; }
-    button.danger { background:#dc3545; }
-    input, select { width:100%; padding:10px; border-radius:10px; border:1px solid #cfd6e1; margin-top:8px; }
-    label { font-weight:600; display:block; margin-top:10px; }
-    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .muted { opacity:.75; font-size:13px; }
-    table { width:100%; border-collapse:collapse; margin-top:10px; }
-    th, td { border-bottom:1px solid #eef1f5; padding:10px 6px; text-align:left; font-size:14px; }
-    th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; opacity:.7; }
-    .right { text-align:right; }
-    .kpi { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-    .kpi .box { background:#f7f9fc; border:1px solid #e7ecf5; border-radius:12px; padding:12px; }
-    .kpi .num { font-size:20px; font-weight:800; }
-    .kpi .lbl { font-size:12px; opacity:.75; margin-top:4px; }
-    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
-    .link { color:#007bff; text-decoration:underline; cursor:pointer; }
-    .hidden { display:none; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <h1>📚 Guia do Concurseiro</h1>
-      <div class="sub">Sem mensalidade • Tudo salvo no seu iPhone</div>
-
-      <div class="tabs">
-        <button class="tab active" data-tab="estudo">Estudo</button>
-        <button class="tab" data-tab="sessoes">Sessões</button>
-        <button class="tab" data-tab="questoes">Questões</button>
-        <button class="tab" data-tab="estat">Estatísticas</button>
-        <button class="tab" data-tab="backup">Backup</button>
-      </div>
-    </div>
-
-    <!-- TAB: ESTUDO -->
-    <div id="tab-estudo" class="card">
-      <div id="timer">00:00:00</div>
-      <div class="btnrow">
-        <button onclick="startTimer()">Iniciar</button>
-        <button class="secondary" onclick="pauseTimer()">Pausar</button>
-        <button class="danger" onclick="resetTimer()">Zerar</button>
-      </div>
-
-      <hr style="margin:16px 0; border:none; border-top:1px solid #eef1f5;">
-
-      <h3 style="margin:0 0 8px;">Registrar Sessão</h3>
-
-      <label>Matéria</label>
-      <input id="materia" placeholder="Ex.: Português" />
-
-      <div class="grid2">
-        <div>
-          <label>Tipo</label>
-          <select id="tipo">
-            <option value="Teoria">Teoria</option>
-            <option value="Questões">Questões</option>
-            <option value="Revisão">Revisão</option>
-          </select>
-        </div>
-        <div>
-          <label>Anotação (opcional)</label>
-          <input id="nota" placeholder="Ex.: foco em crase" />
-        </div>
-      </div>
-
-      <div class="btnrow" style="margin-top:12px;">
-        <button onclick="salvarSessao()">Salvar sessão</button>
-      </div>
-
-      <div class="muted" style="margin-top:8px;">
-        Dica: ao salvar, o cronômetro zera automaticamente.
-      </div>
-    </div>
-
-    <!-- TAB: SESSOES -->
-    <div id="tab-sessoes" class="card hidden">
-      <div class="row">
-        <h3 style="margin:0;">Sessões salvas</h3>
-        <span class="link" onclick="limparSessoes()">Limpar sessões</span>
-      </div>
-      <div class="muted">Tudo fica salvo no seu iPhone (neste navegador/atalho).</div>
-
-      <table id="tblSessoes">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Matéria</th>
-            <th>Tipo</th>
-            <th class="right">Tempo</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <!-- TAB: QUESTOES -->
-    <div id="tab-questoes" class="card hidden">
-      <h3 style="margin:0 0 6px;">Questões (acertos/erros)</h3>
-      <div class="muted">Registre por matéria e o app calcula seu desempenho.</div>
-
-      <label>Matéria</label>
-      <input id="qMateria" placeholder="Ex.: Direito Constitucional" />
-
-      <div class="grid2">
-        <div>
-          <label>Acertos</label>
-          <input id="qAcertos" type="number" min="0" placeholder="0" />
-        </div>
-        <div>
-          <label>Erros</label>
-          <input id="qErros" type="number" min="0" placeholder="0" />
-        </div>
-      </div>
-
-      <label>Observação (opcional)</label>
-      <input id="qObs" placeholder="Ex.: erro em controle de constitucionalidade" />
-
-      <div class="btnrow" style="margin-top:12px;">
-        <button onclick="salvarQuestoes()">Salvar registro</button>
-      </div>
-
-      <hr style="margin:16px 0; border:none; border-top:1px solid #eef1f5;">
-
-      <div class="row">
-        <h3 style="margin:0;">Registros</h3>
-        <span class="link" onclick="limparQuestoes()">Limpar registros</span>
-      </div>
-
-      <table id="tblQuestoes">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Matéria</th>
-            <th class="right">Acertos</th>
-            <th class="right">Erros</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <!-- TAB: ESTAT -->
-    <div id="tab-estat" class="card hidden">
-      <h3 style="margin:0 0 6px;">Estatísticas</h3>
-      <div class="muted">Resumo do que você já registrou.</div>
-
-      <div class="kpi" style="margin-top:10px;">
-        <div class="box">
-          <div class="num" id="kpiTempo">0h</div>
-          <div class="lbl">Tempo total</div>
-        </div>
-        <div class="box">
-          <div class="num" id="kpiSessoes">0</div>
-          <div class="lbl">Sessões</div>
-        </div>
-        <div class="box">
-          <div class="num" id="kpiAproveitamento">0%</div>
-          <div class="lbl">Aproveitamento</div>
-        </div>
-      </div>
-
-      <hr style="margin:16px 0; border:none; border-top:1px solid #eef1f5;">
-
-      <h4 style="margin:0 0 6px;">Top matérias por tempo</h4>
-      <table id="tblTopMaterias">
-        <thead>
-          <tr>
-            <th>Matéria</th>
-            <th class="right">Tempo</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <!-- TAB: BACKUP -->
-    <div id="tab-backup" class="card hidden">
-      <h3 style="margin:0 0 6px;">Backup</h3>
-      <div class="muted">Copie e guarde seu backup. Depois dá pra restaurar.</div>
-
-      <div class="btnrow" style="margin-top:12px;">
-        <button onclick="gerarBackup()">Gerar backup</button>
-        <button class="secondary" onclick="restaurarBackup()">Restaurar backup</button>
-      </div>
-
-      <label style="margin-top:12px;">Texto do backup</label>
-      <input id="backupTxt" placeholder="Toque em 'Gerar backup'..." />
-      <div class="muted" style="margin-top:8px;">
-        Para restaurar: cole o texto aqui e toque em “Restaurar backup”.
-      </div>
-    </div>
-
-  </div>
-
-<script>
-/* ---------------------------
-   DADOS (salvos no iPhone)
----------------------------- */
-const KEY = "guia_do_concurseiro_v1";
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return { sessoes: [], questoes: [] };
-    const obj = JSON.parse(raw);
-    return {
-      sessoes: Array.isArray(obj.sessoes) ? obj.sessoes : [],
-      questoes: Array.isArray(obj.questoes) ? obj.questoes : [],
-    };
-  } catch {
-    return { sessoes: [], questoes: [] };
-  }
-}
-
-function saveState(state) {
-  localStorage.setItem(KEY, JSON.stringify(state));
-}
-
-let state = loadState();
-
-/* ---------------------------
-   ABAS
----------------------------- */
-const tabButtons = document.querySelectorAll(".tab");
-tabButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    tabButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    const tab = btn.dataset.tab;
-    document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add("hidden"));
-    document.getElementById("tab-" + tab).classList.remove("hidden");
-    renderAll();
-  });
-});
-
-/* ---------------------------
-   TIMER
----------------------------- */
-let segundos = 0;
-let intervalo = null;
-
-function formatTime(total) {
-  const h = String(Math.floor(total / 3600)).padStart(2,'0');
-  const m = String(Math.floor((total % 3600) / 60)).padStart(2,'0');
-  const s = String(total % 60).padStart(2,'0');
-  return `${h}:${m}:${s}`;
-}
-
-function tick() {
-  segundos++;
-  document.getElementById("timer").innerText = formatTime(segundos);
-}
-
-function startTimer() {
-  if (!intervalo) intervalo = setInterval(tick, 1000);
-}
-
-function pauseTimer() {
-  clearInterval(intervalo);
-  intervalo = null;
-}
-
-function resetTimer() {
-  pauseTimer();
-  segundos = 0;
-  document.getElementById("timer").innerText = "00:00:00";
-}
-
-/* ---------------------------
-   SESSÕES
----------------------------- */
-function salvarSessao() {
-  const materia = (document.getElementById("materia").value || "").trim();
-  const tipo = document.getElementById("tipo").value;
-  const nota = (document.getElementById("nota").value || "").trim();
-
-  if (!materia) {
-    alert("Coloque a matéria 🙂");
-    return;
-  }
-  if (segundos <= 0) {
-    alert("Inicie o cronômetro antes de salvar 🙂");
-    return;
+<style>
+  :root{
+    --bg1:#0b1220;
+    --bg2:#0f1b33;
+    --card:rgba(255,255,255,.08);
+    --card2:rgba(255,255,255,.10);
+    --stroke:rgba(255,255,255,.12);
+    --text:rgba(255,255,255,.92);
+    --muted:rgba(255,255,255,.68);
+    --blue:#4f8cff;
+    --blue2:#2f6fff;
+    --danger:#ff4d5a;
+    --shadow: 0 18px 45px rgba(0,0,0,.35);
+    --radius:18px;
   }
 
-  const item = {
-    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-    ts: Date.now(),
-    materia,
-    tipo,
-    nota,
-    segundos
-  };
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
 
-  state.sessoes.unshift(item);
-  saveState(state);
-
-  document.getElementById("materia").value = "";
-  document.getElementById("nota").value = "";
-  resetTimer();
-  renderAll();
-  alert("Sessão salva ✅");
-}
-
-function limparSessoes() {
-  if (!confirm("Tem certeza que quer apagar TODAS as sessões?")) return;
-  state.sessoes = [];
-  saveState(state);
-  renderAll();
-}
-
-/* ---------------------------
-   QUESTÕES
----------------------------- */
-function salvarQuestoes() {
-  const materia = (document.getElementById("qMateria").value || "").trim();
-  const acertos = Number(document.getElementById("qAcertos").value || 0);
-  const erros = Number(document.getElementById("qErros").value || 0);
-  const obs = (document.getElementById("qObs").value || "").trim();
-
-  if (!materia) { alert("Coloque a matéria 🙂"); return; }
-  if (acertos < 0 || erros < 0) { alert("Valores inválidos"); return; }
-  if ((acertos + erros) === 0) { alert("Coloque pelo menos 1 questão"); return; }
-
-  const item = {
-    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-    ts: Date.now(),
-    materia,
-    acertos,
-    erros,
-    obs
-  };
-
-  state.questoes.unshift(item);
-  saveState(state);
-
-  document.getElementById("qMateria").value = "";
-  document.getElementById("qAcertos").value = "";
-  document.getElementById("qErros").value = "";
-  document.getElementById("qObs").value = "";
-  renderAll();
-  alert("Registro salvo ✅");
-}
-
-function limparQuestoes() {
-  if (!confirm("Apagar TODOS os registros de questões?")) return;
-  state.questoes = [];
-  saveState(state);
-  renderAll();
-}
-
-/* ---------------------------
-   BACKUP
----------------------------- */
-function gerarBackup() {
-  const txt = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
-  document.getElementById("backupTxt").value = txt;
-  alert("Backup gerado ✅ (copie e guarde)");
-}
-
-function restaurarBackup() {
-  const txt = (document.getElementById("backupTxt").value || "").trim();
-  if (!txt) { alert("Cole o texto do backup primeiro"); return; }
-
-  try {
-    const json = decodeURIComponent(escape(atob(txt)));
-    const obj = JSON.parse(json);
-    state = {
-      sessoes: Array.isArray(obj.sessoes) ? obj.sessoes : [],
-      questoes: Array.isArray(obj.questoes) ? obj.questoes : []
-    };
-    saveState(state);
-    renderAll();
-    alert("Backup restaurado ✅");
-  } catch {
-    alert("Backup inválido 😕");
+  body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(900px 500px at 10% 10%, rgba(79,140,255,.25), transparent 55%),
+      radial-gradient(700px 450px at 90% 20%, rgba(111,66,193,.22), transparent 55%),
+      radial-gradient(800px 500px at 50% 110%, rgba(0,255,170,.10), transparent 60%),
+      linear-gradient(160deg, var(--bg1), var(--bg2));
+    padding:18px;
   }
-}
 
-/* ---------------------------
-   RENDER
----------------------------- */
-function fmtDate(ts) {
-  const d = new Date(ts);
-  return d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR").slice(0,5);
-}
+  .wrap{ max-width: 720px; margin: 0 auto; }
 
-function renderSessoes() {
-  const tbody = document.querySelector("#tblSessoes tbody");
-  tbody.innerHTML = "";
-  state.sessoes.slice(0, 50).forEach(s => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${fmtDate(s.ts)}</td>
-      <td>${escapeHtml(s.materia)}</td>
-      <td>${escapeHtml(s.tipo)}</td>
-      <td class="right">${formatTime(s.segundos)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderQuestoes() {
-  const tbody = document.querySelector("#tblQuestoes tbody");
-  tbody.innerHTML = "";
-  state.questoes.slice(0, 80).forEach(q => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${fmtDate(q.ts)}</td>
-      <td>${escapeHtml(q.materia)}</td>
-      <td class="right">${q.acertos}</td>
-      <td class="right">${q.erros}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderStats() {
-  // tempo total
-  const totalSeg = state.sessoes.reduce((acc, s) => acc + (s.segundos || 0), 0);
-  const horas = Math.floor(totalSeg / 3600);
-  const minutos = Math.floor((totalSeg % 3600) / 60);
-  document.getElementById("kpiTempo").innerText = `${horas}h ${minutos}m`;
-  document.getElementById("kpiSessoes").innerText = String(state.sessoes.length);
-
-  // aproveitamento
-  const totA = state.questoes.reduce((a, q) => a + (q.acertos || 0), 0);
-  const totE = state.questoes.reduce((a, q) => a + (q.erros || 0), 0);
-  const totQ = totA + totE;
-  const perc = totQ ? Math.round((totA / totQ) * 100) : 0;
-  document.getElementById("kpiAproveitamento").innerText = `${perc}%`;
-
-  // top matérias por tempo
-  const map = new Map();
-  state.sessoes.forEach(s => {
-    const key = (s.materia || "").trim();
-    if (!key) return;
-    map.set(key, (map.get(key) || 0) + (s.segundos || 0));
-  });
-
-  const top = Array.from(map.entries())
-    .sort((a,b) => b[1] - a[1])
-    .slice(0, 8);
-
-  const tbody = document.querySelector("#tblTopMaterias tbody");
-  tbody.innerHTML = "";
-  top.forEach(([mat, seg]) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escapeHtml(mat)}</td>
-      <td class="right">${formatTime(seg)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  if (top.length === 0) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="2" class="muted">Ainda sem sessões salvas.</td>`;
-    tbody.appendChild(tr);
+  .card{
+    background: linear-gradient(180deg, var(--card2), var(--card));
+    border:1px solid var(--stroke);
+    border-radius: var(--radius);
+    padding:18px;
+    box-shadow: var(--shadow);
+    margin-bottom:14px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
-}
 
-function renderAll() {
-  renderSessoes();
-  renderQuestoes();
-  renderStats();
-}
+  h1{
+    margin:0 0 8px;
+    text-align:center;
+    font-weight:800;
+    letter-spacing:.2px;
+  }
 
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
+  .sub{
+    text-align:center;
+    color:var(--muted);
+    margin-top:-2px;
+    margin-bottom:12px;
+    font-size:13px;
+  }
 
-renderAll();
-</script>
-</body>
-</html>
+  /* Tabs estilo “pílula” */
+  .tabs{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin:10px 0 0;
+  }
+  .tab{
+    padding:10px 14px;
+    border-radius:999px;
+    border:1px solid var(--stroke);
+    background: rgba(255,255,255,.06);
+    color: var(--text);
+    font-weight:700;
+    font-size:14px;
+  }
+  .tab.active{
+    background: linear-gradient(180deg, var(--blue), var(--blue2));
+    border-color: transparent;
+    box-shadow: 0 10px 25px rgba(79,140,255,.22);
+  }
+
+  /* Timer grande e “app-like” */
+  #timer{
+    font-size:52px;
+    text-align:center;
+    margin: 14px 0 10px;
+    font-weight:900;
+    letter-spacing: 2px;
+    text-shadow: 0 10px 25px rgba(0,0,0,.35);
+  }
+
+  .btnrow{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:6px;
+  }
+
+  button{
+    padding:12px 16px;
+    border:none;
+    border-radius:14px;
+    background: linear-gradient(180deg, var(--blue), var(--blue2));
+    color:#fff;
+    font-size:16px;
+    font-weight:800;
+    box-shadow: 0 14px 30px rgba(79,140,255,.18);
+    cursor:pointer;
+  }
+  button.secondary{
+    background: rgba(255,255,255,.10);
+    border:1px solid var(--stroke);
+    box-shadow:none;
+    color:var(--text);
+  }
+  button.danger{
+    background: linear-gradient(180deg, var(--danger), #ff2f3f);
+    box-shadow: 0 14px 30px rgba(255,77,90,.18);
+  }
+
+  hr{
+    margin:16px 0;
+    border:none;
+    border-top:1px solid rgba(255,255,255,.10);
+  }
+
+  label{
+    font-weight:800;
+    display:block;
+    margin-top:10px;
+    color: rgba(255,255,255,.85);
+    font-size:13px;
+  }
+
+  input, select{
+    width:100%;
+    padding:12px 12px;
+    border-radius:14px;
+    border:1px solid var(--stroke);
+    background: rgba(0,0,0,.18);
+    color:var(--text);
+    margin-top:8px;
+    outline:none;
+  }
+  input::placeholder{ color: rgba(255,255,255,.45); }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:520px){
+    .grid2{ grid-template-columns:1fr; }
+    #timer{ font-size:46px; }
+  }
+
+  .muted{ color:var(--muted); font-size:13px; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    overflow:hidden;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.10);
+  }
+  th, td{
+    border-bottom:1px solid rgba(255,255,255,.08);
+    padding:10px 8px;
+    text-align:left;
+    font-size:14px;
+  }
+  th{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color: rgba(255,255,255,.65);
+    background: rgba(255,255,255,.06);
+  }
+
+  .right{ text-align:right; }
+
+  .kpi{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:10px;
+  }
+  @media (max-width:520px){ .kpi{ grid-template-columns:1fr; } }
+
+  .kpi .box{
+    background: rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:16px;
+    padding:12px;
+  }
+  .kpi .num{
+    font-size:22px;
+    font-weight:900;
+  }
+  .kpi .lbl{
+    font-size:12px;
+    color: rgba(255,255,255,.65);
+    margin-top:4px;
+  }
+
+  .row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .link{
+    color: rgba(255,255,255,.85);
+    text-decoration: underline;
+    cursor:pointer;
+    font-weight:700;
+  }
+
+  .hidden{ display:none; }
+</style>
