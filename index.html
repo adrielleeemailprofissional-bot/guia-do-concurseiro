@@ -1,219 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia do Concurseiro</title>
+
 <style>
-  :root{
-    --bg1:#0b1220;
-    --bg2:#0f1b33;
-    --card:rgba(255,255,255,.08);
-    --card2:rgba(255,255,255,.10);
-    --stroke:rgba(255,255,255,.12);
-    --text:rgba(255,255,255,.92);
-    --muted:rgba(255,255,255,.68);
-    --blue:#4f8cff;
-    --blue2:#2f6fff;
-    --danger:#ff4d5a;
-    --shadow: 0 18px 45px rgba(0,0,0,.35);
-    --radius:18px;
-  }
+:root{
+  --bg1:#0b1220;
+  --bg2:#0f1b33;
+  --card:rgba(255,255,255,.08);
+  --stroke:rgba(255,255,255,.12);
+  --text:#ffffff;
+  --blue:#4f8cff;
+}
 
-  *{ box-sizing:border-box; }
-  html,body{ height:100%; }
+*{box-sizing:border-box;}
 
-  body{
-    margin:0;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
-    color:var(--text);
-    background:
-      radial-gradient(900px 500px at 10% 10%, rgba(79,140,255,.25), transparent 55%),
-      radial-gradient(700px 450px at 90% 20%, rgba(111,66,193,.22), transparent 55%),
-      radial-gradient(800px 500px at 50% 110%, rgba(0,255,170,.10), transparent 60%),
-      linear-gradient(160deg, var(--bg1), var(--bg2));
-    padding:18px;
-  }
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  color:var(--text);
+  background:
+    radial-gradient(900px 500px at 10% 10%, rgba(79,140,255,.25), transparent 55%),
+    linear-gradient(160deg,var(--bg1),var(--bg2));
+  padding:20px;
+}
 
-  .wrap{ max-width: 720px; margin: 0 auto; }
+.wrap{max-width:720px;margin:0 auto;}
 
-  .card{
-    background: linear-gradient(180deg, var(--card2), var(--card));
-    border:1px solid var(--stroke);
-    border-radius: var(--radius);
-    padding:18px;
-    box-shadow: var(--shadow);
-    margin-bottom:14px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
+.card{
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:15px;
+  backdrop-filter:blur(10px);
+}
 
-  h1{
-    margin:0 0 8px;
-    text-align:center;
-    font-weight:800;
-    letter-spacing:.2px;
-  }
+h1{text-align:center;margin:0 0 10px;}
 
-  .sub{
-    text-align:center;
-    color:var(--muted);
-    margin-top:-2px;
-    margin-bottom:12px;
-    font-size:13px;
-  }
+#timer{
+  font-size:48px;
+  text-align:center;
+  margin:15px 0;
+  font-weight:bold;
+}
 
-  /* Tabs estilo “pílula” */
-  .tabs{
-    display:flex;
-    gap:10px;
-    justify-content:center;
-    flex-wrap:wrap;
-    margin:10px 0 0;
-  }
-  .tab{
-    padding:10px 14px;
-    border-radius:999px;
-    border:1px solid var(--stroke);
-    background: rgba(255,255,255,.06);
-    color: var(--text);
-    font-weight:700;
-    font-size:14px;
-  }
-  .tab.active{
-    background: linear-gradient(180deg, var(--blue), var(--blue2));
-    border-color: transparent;
-    box-shadow: 0 10px 25px rgba(79,140,255,.22);
-  }
+.btnrow{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
 
-  /* Timer grande e “app-like” */
-  #timer{
-    font-size:52px;
-    text-align:center;
-    margin: 14px 0 10px;
-    font-weight:900;
-    letter-spacing: 2px;
-    text-shadow: 0 10px 25px rgba(0,0,0,.35);
-  }
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  background:var(--blue);
+  color:#fff;
+  font-weight:bold;
+}
 
-  .btnrow{
-    display:flex;
-    gap:10px;
-    justify-content:center;
-    flex-wrap:wrap;
-    margin-top:6px;
-  }
-
-  button{
-    padding:12px 16px;
-    border:none;
-    border-radius:14px;
-    background: linear-gradient(180deg, var(--blue), var(--blue2));
-    color:#fff;
-    font-size:16px;
-    font-weight:800;
-    box-shadow: 0 14px 30px rgba(79,140,255,.18);
-    cursor:pointer;
-  }
-  button.secondary{
-    background: rgba(255,255,255,.10);
-    border:1px solid var(--stroke);
-    box-shadow:none;
-    color:var(--text);
-  }
-  button.danger{
-    background: linear-gradient(180deg, var(--danger), #ff2f3f);
-    box-shadow: 0 14px 30px rgba(255,77,90,.18);
-  }
-
-  hr{
-    margin:16px 0;
-    border:none;
-    border-top:1px solid rgba(255,255,255,.10);
-  }
-
-  label{
-    font-weight:800;
-    display:block;
-    margin-top:10px;
-    color: rgba(255,255,255,.85);
-    font-size:13px;
-  }
-
-  input, select{
-    width:100%;
-    padding:12px 12px;
-    border-radius:14px;
-    border:1px solid var(--stroke);
-    background: rgba(0,0,0,.18);
-    color:var(--text);
-    margin-top:8px;
-    outline:none;
-  }
-  input::placeholder{ color: rgba(255,255,255,.45); }
-
-  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  @media (max-width:520px){
-    .grid2{ grid-template-columns:1fr; }
-    #timer{ font-size:46px; }
-  }
-
-  .muted{ color:var(--muted); font-size:13px; }
-
-  table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
-    overflow:hidden;
-    border-radius:14px;
-    border:1px solid rgba(255,255,255,.10);
-  }
-  th, td{
-    border-bottom:1px solid rgba(255,255,255,.08);
-    padding:10px 8px;
-    text-align:left;
-    font-size:14px;
-  }
-  th{
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-    color: rgba(255,255,255,.65);
-    background: rgba(255,255,255,.06);
-  }
-
-  .right{ text-align:right; }
-
-  .kpi{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:10px;
-  }
-  @media (max-width:520px){ .kpi{ grid-template-columns:1fr; } }
-
-  .kpi .box{
-    background: rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:16px;
-    padding:12px;
-  }
-  .kpi .num{
-    font-size:22px;
-    font-weight:900;
-  }
-  .kpi .lbl{
-    font-size:12px;
-    color: rgba(255,255,255,.65);
-    margin-top:4px;
-  }
-
-  .row{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .link{
-    color: rgba(255,255,255,.85);
-    text-decoration: underline;
-    cursor:pointer;
-    font-weight:700;
-  }
-
-  .hidden{ display:none; }
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--stroke);
+  background:rgba(0,0,0,.3);
+  color:#fff;
+  margin-top:10px;
+}
 </style>
+</head>
+
+<body>
+<div class="wrap">
+
+<div class="card">
+<h1>📚 Guia do Concurseiro</h1>
+<div id="timer">00:00:00</div>
+
+<div class="btnrow">
+<button onclick="startTimer()">Iniciar</button>
+<button onclick="pauseTimer()">Pausar</button>
+<button onclick="resetTimer()">Zerar</button>
+</div>
+
+<input id="materia" placeholder="Matéria (ex: Português)">
+<button style="margin-top:12px;width:100%;" onclick="salvarSessao()">Salvar sessão</button>
+</div>
+
+</div>
+
+<script>
+let segundos=0;
+let intervalo=null;
+
+function formatTime(total){
+  const h=String(Math.floor(total/3600)).padStart(2,'0');
+  const m=String(Math.floor((total%3600)/60)).padStart(2,'0');
+  const s=String(total%60).padStart(2,'0');
+  return h+":"+m+":"+s;
+}
+
+function tick(){
+  segundos++;
+  document.getElementById("timer").innerText=formatTime(segundos);
+}
+
+function startTimer(){
+  if(!intervalo) intervalo=setInterval(tick,1000);
+}
+
+function pauseTimer(){
+  clearInterval(intervalo);
+  intervalo=null;
+}
+
+function resetTimer(){
+  pauseTimer();
+  segundos=0;
+  document.getElementById("timer").innerText="00:00:00";
+}
+
+function salvarSessao(){
+  const materia=document.getElementById("materia").value;
+  if(!materia){alert("Coloque a matéria 🙂");return;}
+  alert("Sessão salva de "+materia+" ✅");
+  resetTimer();
+  document.getElementById("materia").value="";
+}
+</script>
+
+</body>
+</html>
